@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste AgriScienceCrop</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .api-test { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 AgriScienceCrop - Teste de Conexão com API</h1>
+        
+        <div class="api-test">
+            <h3>🔍 Teste de APIs</h3>
+            <button onclick="testHealth()">Health Check</button>
+            <button onclick="testCrops()">Listar Cultivos</button>
+            <button onclick="testProtocols()">Listar Protocolos</button>
+            <button onclick="testRegister()">Registrar Usuário</button>
+            <button onclick="testLogin()">Login</button>
+            <div id="results"></div>
+        </div>
+
+        <div class="api-test">
+            <h3>📊 Resultados</h3>
+            <pre id="output">Clique nos botões acima para testar as APIs...</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let authToken = null;
+
+        function log(message, isError = false) {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}\n`;
+            output.textContent += logMessage;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function showResult(message, success = true) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = success ? 'success' : 'error';
+            div.innerHTML = `<strong>${success ? '✅' : '❌'}</strong> ${message}`;
+            results.appendChild(div);
+        }
+
+        async function testHealth() {
+            try {
+                log('🔍 Testando Health Check...');
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                log(`✅ Health Check: ${JSON.stringify(data, null, 2)}`);
+                showResult('Health Check funcionando!');
+            } catch (error) {
+                log(`❌ Erro no Health Check: ${error.message}`, true);
+                showResult('Erro no Health Check', false);
+            }
+        }
+
+        async function testCrops() {
+            try {
+                log('🌱 Testando API de Cultivos...');
+                const response = await fetch(`${API_BASE}/api/crops`);
+                const data = await response.json();
+                log(`✅ Cultivos (${data.length} encontrados): ${JSON.stringify(data.slice(0, 2), null, 2)}...`);
+                showResult(`Cultivos carregados: ${data.length} itens`);
+            } catch (error) {
+                log(`❌ Erro na API de Cultivos: ${error.message}`, true);
+                showResult('Erro na API de Cultivos', false);
+            }
+        }
+
+        async function testProtocols() {
+            try {
+                log('📋 Testando API de Protocolos...');
+                const response = await fetch(`${API_BASE}/api/protocols`);
+                const data = await response.json();
+                log(`✅ Protocolos (${data.length} encontrados): ${JSON.stringify(data, null, 2)}`);
+                showResult(`Protocolos carregados: ${data.length} itens`);
+            } catch (error) {
+                log(`❌ Erro na API de Protocolos: ${error.message}`, true);
+                showResult('Erro na API de Protocolos', false);
+            }
+        }
+
+        async function testRegister() {
+            try {
+                log('👤 Testando Registro de Usuário...');
+                const userData = {
+                    username: 'teste-frontend',
+                    email: 'teste-frontend@agriscience.com',
+                    password: '123456',
+                    confirmPassword: '123456',
+                    firstName: 'Teste',
+                    lastName: 'Frontend',
+                    role: 'farmer'
+                };
+
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                authToken = data.token;
+                localStorage.setItem('token', authToken);
+                log(`✅ Usuário registrado: ${JSON.stringify(data.user, null, 2)}`);
+                showResult('Usuário registrado com sucesso!');
+            } catch (error) {
+                log(`❌ Erro no registro: ${error.message}`, true);
+                showResult('Erro no registro', false);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                log('🔐 Testando Login...');
+                const loginData = {
+                    email: 'teste-frontend@agriscience.com',
+                    password: '123456'
+                };
+
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData)
+                });
+
+                const data = await response.json();
+                authToken = data.token;
+                localStorage.setItem('token', authToken);
+                log(`✅ Login realizado: ${JSON.stringify(data.user, null, 2)}`);
+                showResult('Login realizado com sucesso!');
+            } catch (error) {
+                log(`❌ Erro no login: ${error.message}`, true);
+                showResult('Erro no login', false);
+            }
+        }
+
+        // Teste automático ao carregar a página
+        window.onload = () => {
+            log('🚀 Iniciando testes automáticos...');
+            setTimeout(testHealth, 500);
+            setTimeout(testCrops, 1000);
+            setTimeout(testProtocols, 1500);
+        };
+    </script>
+</body>
+</html>
