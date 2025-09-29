@@ -2,6 +2,12 @@
 
 Frontend for AgriScienceCrop application - Intelligent Crop Management Platform for Brazilian agriculture.
 
+## System Architecture
+
+![AgriScience BR - System Architecture](./agriscience.jpeg)
+
+*Complete system architecture diagram showing the integration between Frontend, Backend, External APIs, and Database components.*
+
 ## Frontend Architecture
 
 The client application is built with React 18 using TypeScript and modern hooks-based functional components. The UI leverages Tailwind CSS for styling with a comprehensive component library based on Radix UI primitives, providing accessibility and consistency. The application uses Wouter for client-side routing and TanStack Query for server state management and caching.
